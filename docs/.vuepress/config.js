@@ -5,4 +5,6 @@ import { defineUserConfig } from "vuepress";
 export default defineUserConfig({
   bundler: viteBundler(),
   theme: defaultTheme(),
+  lang: 'zh-CN',
+  title: 'Hello，这是我的第一个 VuePress 站点'
 });
