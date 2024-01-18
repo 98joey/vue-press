@@ -20,7 +20,7 @@ jobs:
       - name: 安装Node
         uses: actions/setup-node@v1
         with:
-          node-version: "12.x" # action使用的node版本，建议大版本和本地保持一致。可以在本地用node -v查询版本号。
+          node-version: "18.x" # action使用的node版本，建议大版本和本地保持一致。可以在本地用node -v查询版本号。
 
       - name: 安装Hexo
         run: |
