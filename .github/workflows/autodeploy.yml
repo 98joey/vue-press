@@ -18,17 +18,17 @@ uses: actions/checkout@v2
 with:  
 ref: main #2020年10月后github新建仓库默认分支改为main，注意更改  
   
-- name: 安装 Node  
+- name: 安装Node  
 uses: actions/setup-node@v1  
 with:  
 node-version: "12.x" #action使用的node版本，建议大版本和本地保持一致。可以在本地用node -v查询版本号。  
   
-- name: 安装 Hexo  
+- name: 安装Hexo  
 run: |  
 export TZ='Asia/Shanghai'  
 npm install hexo-cli -g  
   
-- name: 缓存 Hexo  
+- name: 缓存Hexo  
 uses: actions/cache@v1  
 id: cache  
 with:  
