@@ -1,3 +1,4 @@
+---
 # 当有改动推送到master分支时，启动Action  
 name: 自动部署  
   
