@@ -1,55 +1,51 @@
-name: 自动部署
+name: autp deploy
 
 on:
+  # 每当 push 到 main 分支时触发部署
   push:
-    branches:
-      - main # 2020年10月后github新建仓库默认分支改为main，注意更改
-  release:
-    types:
-      - published
+    branches: [main]
+  # 手动触发部署
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  docs:
     runs-on: ubuntu-latest
+
     steps:
-      - name: 检查分支
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v4
         with:
-          ref: main # 2020年10月后github新建仓库默认分支改为main，注意更改
+          # “最近更新时间” 等 git 日志相关信息，需要拉取全部提交记录
+          fetch-depth: 0
 
-      - name: 安装Node
-        uses: actions/setup-node@v1
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2
         with:
-          node-version: "18.x" # action使用的node版本，建议大版本和本地保持一致。可以在本地用node -v查询版本号。
+          # 选择要使用的 pnpm 版本
+          version: 8
+          # 使用 pnpm 安装依赖
+          run_install: true
 
-      - name: 安装Hexo
-        run: |
-          export TZ='Asia/Shanghai'
-          npm install hexo-cli -g
-
-      - name: 缓存Hexo
-        uses: actions/cache@v1
-        id: cache
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          path: node_modules
-          key: ${{runner.OS}}-${{hashFiles('**/package-lock.json')}}
+          # 选择要使用的 node 版本
+          node-version: 18
+          # 缓存 pnpm 依赖
+          cache: pnpm
 
-      - name: 安装依赖
-        if: steps.cache.outputs.cache-hit != 'true'
-        run: |
-          npm install --save
+      # 运行构建脚本
+      - name: Build VuePress site
+        run: pnpm docs:build
 
-      - name: 生成静态文件
-        run: |
-          hexo clean
-          hexo generate
-
-      - name: 部署 # 此处master:master 指从本地的master分支提交到远程仓库的master分支，若远程仓库没有对应分支则新建一个。如有其他需要，可以根据自己的需求更改。
-        run: |
-          cd ./public
-          git init
-          git config --global user.name '${{ secrets.GITHUBUSERNAME }}'
-          git config --global user.email '${{ secrets.GITHUBEMAIL }}'
-          git add .
-          git commit -m "${{ github.event.head_commit.message }} $(date +"%Z %Y-%m-%d %A %H:%M:%S") Updated By Github Actions"
-          git push --force --quiet "https://${{ secrets.GITHUBUSERNAME }}:${{ secrets.GITHUBTOKEN }}@github.com/${{ secrets.GITHUBUSERNAME }}/${{ secrets.GITHUBUSERNAME }}.github.io.git" main:main
+      # 查看 workflow 的文档来获取更多信息
+      # @see https://github.com/crazy-max/ghaction-github-pages
+      - name: Deploy to GitHub Pages
+        uses: crazy-max/ghaction-github-pages@v4
+        with:
+          # 部署到 gh-pages 分支
+          target_branch: gh-pages
+          # 部署目录为 VuePress 的默认输出目录
+          build_dir: docs/.vuepress/dist
+        env:
+          # @see https://docs.github.com/cn/actions/reference/authentication-in-a-workflow#about-the-github_token-secret
+          GITHUB_TOKEN: ${{ secrets.GITHUBTOKEN }}
