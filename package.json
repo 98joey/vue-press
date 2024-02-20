@@ -5,6 +5,7 @@
   "author": "jiaming.wu <jiaming.wu@nio.com>",
   "license": "MIT",
   "scripts": {
+    "dev": "vuepress dev docs",
     "docs:dev": "vuepress dev docs",
     "docs:build": "vuepress build docs"
   },

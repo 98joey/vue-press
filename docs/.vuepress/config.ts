@@ -6,5 +6,6 @@ export default defineUserConfig({
   bundler: viteBundler(),
   theme: defaultTheme(),
   lang: 'zh-CN',
-  title: 'Hello，这是我的第一个 VuePress 站点'
+  title: 'Hello，这是我的第一个 VuePress 站点',
+  pagePatterns: ['**/*.md', '!node_modules'],  
 });
